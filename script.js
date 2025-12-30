@@ -194,10 +194,21 @@ submitButton.addEventListener("click", async () => {
                 room_id: currentRoomId
             };
             
-            // If we're in a shared room, save directly to Supabase
-            // Otherwise, save to localStorage for personal use
-            if (currentRoomId && supabaseClient) {
-                // Save to Supabase for shared room
+            // Always try to save to Supabase if client is available
+            // Also save to localStorage for immediate display
+            const savedWish = saveWishToLocalStorage(wishData);
+            if (savedWish) {
+                addWishToBoard({ ...savedWish, isNew: true });
+            }
+            
+            // Save to Supabase database (for both personal and shared modes)
+            if (supabaseClient) {
+                console.log('Attempting to save to Supabase...', {
+                    hasRoomId: !!currentRoomId,
+                    roomId: currentRoomId,
+                    supabaseClient: !!supabaseClient
+                });
+                
                 supabaseClient
                     .from('birthday_wishes')
                     .insert([
@@ -207,28 +218,42 @@ submitButton.addEventListener("click", async () => {
                             ip_address: ipAddress,
                             device_info: deviceInfo,
                             created_at: new Date().toISOString(),
-                            room_id: currentRoomId
+                            room_id: currentRoomId || null  // null for personal mode
                         }
                     ])
                     .then(({ data, error }) => {
                         if (error) {
-                            console.error('Error saving wish to database:', error);
-                            showNotification("Error saving wish. Please try again.", "error");
+                            console.error('❌ Error saving wish to database:', error);
+                            console.error('Error details:', JSON.stringify(error, null, 2));
+                            
+                            // Show detailed error message
+                            let errorMsg = "Error saving wish to database.";
+                            if (error.code === 'PGRST116' || error.message?.includes('relation') || error.message?.includes('does not exist')) {
+                                errorMsg = "Database table not found. Please run the SQL setup scripts.";
+                            } else if (error.code === '42501' || error.message?.includes('permission')) {
+                                errorMsg = "Permission denied. Check RLS policies in Supabase.";
+                            } else if (error.message?.includes('room_id')) {
+                                errorMsg = "Database column 'room_id' missing. Run supabase-room-migration.sql";
+                            }
+                            
+                            console.error('Error message:', errorMsg);
+                            // Don't show error notification to user - localStorage save succeeded
                         } else {
-                            // Wish will appear via real-time subscription
-                            console.log('✅ Wish saved to shared room:', data);
+                            console.log('✅ Wish saved to database successfully:', data);
+                            if (currentRoomId) {
+                                console.log('✅ Saved to shared room:', currentRoomId);
+                            } else {
+                                console.log('✅ Saved to database (personal mode)');
+                            }
                         }
                     })
                     .catch(error => {
-                        console.error('Error saving wish to database:', error);
-                        showNotification("Error saving wish. Please try again.", "error");
+                        console.error('❌ Exception saving wish to database:', error);
+                        console.error('Exception details:', JSON.stringify(error, null, 2));
                     });
             } else {
-                // Save to localStorage for personal use
-                const savedWish = saveWishToLocalStorage(wishData);
-                if (savedWish) {
-                    addWishToBoard({ ...savedWish, isNew: true });
-                }
+                console.warn('⚠️ Supabase client not initialized. Wish saved to localStorage only.');
+                console.warn('Check config.js to ensure Supabase credentials are correct.');
             }
             
             // Clear the inputs
@@ -630,19 +655,29 @@ function updateBoardModeIndicator(isShared) {
 
 // Load wishes when page loads
 window.addEventListener("load", () => {
+    // Diagnostic: Check Supabase initialization
+    console.log('🔍 Supabase Diagnostic Check:');
+    console.log('- Supabase client initialized:', !!supabaseClient);
+    console.log('- Supabase URL:', SUPABASE_CONFIG?.url || 'Not set');
+    console.log('- Has anon key:', !!SUPABASE_CONFIG?.anonKey);
+    
     // Check if we're in a shared room (room ID from URL)
     const roomIdFromUrl = getRoomIdFromUrl();
     
     if (roomIdFromUrl && supabaseClient) {
         // We're in a shared room - load from Supabase
         currentRoomId = roomIdFromUrl;
-        console.log('Loading shared room:', currentRoomId);
+        console.log('✅ Loading shared room:', currentRoomId);
         updateBoardModeIndicator(true);
         loadWishesFromSupabase(roomIdFromUrl);
     } else {
         // Personal mode - load from localStorage
         currentRoomId = null;
-        console.log('Loading personal wishes from localStorage');
+        console.log('📱 Loading personal wishes from localStorage');
+        if (!supabaseClient) {
+            console.warn('⚠️ Supabase not initialized - data will only save to localStorage');
+            console.warn('💡 To enable database saving, check config.js and ensure Supabase credentials are correct');
+        }
         updateBoardModeIndicator(false);
         loadWishesFromLocalStorage();
     }
