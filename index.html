@@ -3,22 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy New Year 2026!</title>
+    <meta name="description" content="Celebrate New Year 2026 with beautiful cards and share your wishes with the world!">
+    <title>Happy New Year 2026! | Celebration & Wishes</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="greeting">
-        <h1>🎉 Happy New Year 2026! 🎊</h1>
-        <p class="subtitle">Welcome to a new year filled with joy, success, and endless possibilities!</p>
-    </div>
-    
-    <div id="cursor-following">
-        <div id="cake-cursor">🎊</div>
-    </div>
-    
-    <div class="birthday-cards-section">
-        <h2 class="section-title">🎴 New Year Cards Collection</h2>
-        <div class="cards-container" id="cards-container">
+    <main class="main-container">
+        <header class="hero-section">
+            <div class="greeting">
+                <h1 class="hero-title">
+                    <span class="emoji-large">🎉</span>
+                    <span class="title-text">Happy New Year 2026</span>
+                    <span class="emoji-large">🎊</span>
+                </h1>
+                <p class="subtitle">Welcome to a new year filled with joy, success, and endless possibilities!</p>
+            </div>
+        </header>
+        
+        <div id="cursor-following">
+            <div id="cake-cursor">🎊</div>
+        </div>
+        
+        <section class="cards-section">
+            <div class="section-header">
+                <h2 class="section-title">New Year Cards Collection</h2>
+                <p class="section-description">Click on any card to reveal a special message</p>
+            </div>
+            <div class="cards-container" id="cards-container">
             <div class="card" data-card="1">
                 <div class="card-inner">
                     <div class="card-front">
@@ -85,40 +96,65 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="birthday-wishes">
-        <h2>Write Your New Year Wish!</h2>
-        <div class="wish-input-section">
-            <textarea id="wish" placeholder="Enter your message here..."></textarea>
-            <input type="text" id="wisher-name" placeholder="Your name (optional)" maxlength="50">
-            <button id="submit-wish">Submit Wish</button>
-        </div>
-    </div>
-    
-    <div class="wishes-board-section">
-        <div class="board-header">
-            <h2 class="section-title">💌 New Year Wishes Board</h2>
-        </div>
-        <button id="share-button" class="share-button" title="Share this board with others to see all wishes together">
-            📤 Share Board
-        </button>
-        <div id="board-mode-indicator" class="board-mode-indicator"></div>
-        <div class="wishes-board" id="wishes-board">
-            <div class="loading-message" id="loading-message">Loading wishes... ✨</div>
-        </div>
-    </div>
+            </div>
+        </section>
+        
+        <section class="wish-form-section">
+            <div class="section-header">
+                <h2 class="section-title">Share Your New Year Wish</h2>
+                <p class="section-description">Write a heartfelt message and share it with the world</p>
+            </div>
+            <div class="wish-form-container">
+                <div class="wish-input-section">
+                    <div class="input-group">
+                        <label for="wish" class="input-label">Your Message</label>
+                        <textarea id="wish" placeholder="Share your hopes, dreams, and wishes for the new year..." rows="5"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="wisher-name" class="input-label">Your Name <span class="optional">(Optional)</span></label>
+                        <input type="text" id="wisher-name" placeholder="Enter your name" maxlength="50">
+                    </div>
+                    <button id="submit-wish" class="btn-primary">
+                        <span class="btn-text">Submit Wish</span>
+                        <span class="btn-icon">✨</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <section class="wishes-board-section">
+            <div class="section-header">
+                <h2 class="section-title">New Year Wishes Board</h2>
+                <p class="section-description">See what others are wishing for this new year</p>
+            </div>
+            <div class="board-controls">
+                <button id="share-button" class="share-button" title="Share this board with others to see all wishes together">
+                    <span class="btn-icon">📤</span>
+                    <span class="btn-text">Share Board</span>
+                </button>
+                <div id="board-mode-indicator" class="board-mode-indicator"></div>
+            </div>
+            <div class="wishes-board" id="wishes-board">
+                <div class="loading-message" id="loading-message">
+                    <div class="loading-spinner"></div>
+                    <span>Loading wishes...</span>
+                </div>
+            </div>
+        </section>
+    </main>
     
     <div class="balloons-container" id="balloons"></div>
     
-    <footer>
-        <p>Made with ❤️ by Zainul Abideen</p>
-        <p class="social-link">
-            <a href="https://www.instagram.com/_zaayyy__n" target="_blank" rel="noopener noreferrer">
-                📷 Follow on Instagram
-            </a>
-        </p>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p class="footer-text">Made with <span class="heart">❤️</span> by <strong>Zainul Abideen</strong></p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/_zaayyy__n" target="_blank" rel="noopener noreferrer" class="social-link">
+                    <span class="social-icon">📷</span>
+                    <span class="social-text">Follow on Instagram</span>
+                </a>
+            </div>
+        </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>

@@ -176,7 +176,12 @@ submitButton.addEventListener("click", async () => {
     if (wishMessage) {
         // Disable button during submission
         submitButton.disabled = true;
-        submitButton.textContent = "Submitting...";
+        const btnText = submitButton.querySelector('.btn-text');
+        if (btnText) {
+            btnText.textContent = "Submitting...";
+        } else {
+            submitButton.textContent = "Submitting...";
+        }
         
         try {
             // Get IP address and device info
@@ -280,7 +285,12 @@ submitButton.addEventListener("click", async () => {
         } finally {
             // Re-enable button
             submitButton.disabled = false;
-            submitButton.textContent = "Submit Wish";
+            const btnText = submitButton.querySelector('.btn-text');
+            if (btnText) {
+                btnText.textContent = "Submit Wish";
+            } else {
+                submitButton.textContent = "Submit Wish";
+            }
         }
     } else {
         showNotification("Please write a wish! 💭", "error");

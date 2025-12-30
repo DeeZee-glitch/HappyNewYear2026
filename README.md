@@ -1,16 +1,16 @@
-# 🎉 Birthday Celebration Website
+# 🎉 New Year 2026 Celebration Website
 
-A fun and interactive birthday celebration website with cursor-following animations, confetti effects, birthday cards, and a **shareable birthday wishes board** powered by Supabase!
+A fun and interactive New Year celebration website with cursor-following animations, confetti effects, New Year cards, and a **shareable New Year wishes board** powered by Supabase!
 
 ## 📋 Project Description
 
-This is a beautiful, interactive birthday celebration website that includes:
+This is a beautiful, interactive New Year celebration website that includes:
 
-- **Animated Birthday Greeting**: A welcoming "Happy Birthday!" message with bounce animations
-- **Cursor-Following Cake**: A birthday cake emoji that follows your mouse cursor
-- **Interactive Birthday Cards**: Flip cards with beautiful birthday messages
+- **Animated New Year Greeting**: A welcoming "Happy New Year 2026!" message with bounce animations
+- **Cursor-Following Emoji**: A New Year emoji that follows your mouse cursor
+- **Interactive New Year Cards**: Flip cards with beautiful New Year messages
 - **Confetti Effects**: Click anywhere on the page to trigger colorful confetti!
-- **Personal Birthday Wishes Board**: Write and submit birthday wishes that are stored in your browser's localStorage
+- **Personal New Year Wishes Board**: Write and submit New Year wishes that are stored in your browser's localStorage
 - **Shareable Wish Boards**: Click "Share Board" to create a shared room where everyone can see all wishes together!
 - **Real-time Updates**: When using a shared board, see new wishes appear instantly as others submit them
 - **Privacy-Focused**: Personal mode keeps your wishes private, or share a link to see everyone's wishes together
@@ -23,8 +23,8 @@ This is a beautiful, interactive birthday celebration website that includes:
 ### Step 1: Clone or Download
 
 ```bash
-git clone https://github.com/DeeZee-glitch/HappyBirthday.git
-cd HappyBirthday
+git clone https://github.com/DeeZee-glitch/HappyNewYear2026.git
+cd HappyNewYear2026
 ```
 
 ### Step 2: Set Up Supabase (Required for Wishes Board)
@@ -37,7 +37,7 @@ cd HappyBirthday
    - Click "New Project"
    - Choose an organization (or create one)
    - Enter project details:
-     - Name: `birthday-wishes` (or any name you prefer)
+     - Name: `newyear-wishes` (or any name you prefer)
      - Database Password: (save this securely)
      - Region: Choose closest to you
    - Click "Create new project" (takes 1-2 minutes)
@@ -60,7 +60,7 @@ cd HappyBirthday
    
    The table includes:
    - `id` - Unique identifier
-   - `message` - The birthday wish message
+   - `message` - The New Year wish message
    - `wisher_name` - Name of the person leaving the wish
    - `ip_address` - IP address of the user (for analytics)
    - `device_info` - Device information stored as JSON (browser, OS, device type, language)
@@ -107,7 +107,7 @@ Then navigate to `http://localhost:8000` in your browser
 
 ### Step 4: Deploy to Make it Public
 
-To share your birthday page with others, deploy it to a hosting service:
+To share your New Year page with others, deploy it to a hosting service:
 
 **Free Hosting Options:**
 - **Netlify**: Drag and drop your folder to [netlify.com](https://netlify.com)
@@ -126,7 +126,7 @@ Once deployed, share the link with friends and family!
   
 - **Supabase JS Client**: For database functionality
   - CDN: `https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2`
-  - Used for storing and retrieving birthday wishes
+  - Used for storing and retrieving New Year wishes
 
 ### No Build Process Required
 
@@ -136,10 +136,10 @@ This project uses vanilla JavaScript, HTML, and CSS - no build tools or package 
 
 ### Interactive Elements
 
-- **Cursor Following**: Move your mouse to see the birthday cake follow along
-- **Interactive Birthday Cards**: Click cards to flip and reveal birthday messages
+- **Cursor Following**: Move your mouse to see the New Year emoji follow along
+- **Interactive New Year Cards**: Click cards to flip and reveal New Year messages
 - **Click Confetti**: Click anywhere on the page to trigger confetti at that location
-- **Wish Submission**: Write birthday wishes with optional name
+- **Wish Submission**: Write New Year wishes with optional name
 - **Personal Wishes Board**: Beautiful grid display of YOUR wishes (stored in browser localStorage)
 - **Privacy**: Each user only sees their own wishes - completely private
 - **Floating Balloons**: Watch colorful balloons float across the screen
@@ -173,7 +173,7 @@ The website is fully responsive and works on:
 ## 📁 Project Structure
 
 ```
-birthday-celebration/
+newyear-celebration/
 ├── index.html          # Main HTML file
 ├── styles.css          # Styling and animations
 ├── script.js           # Interactive JavaScript functionality
@@ -184,16 +184,16 @@ birthday-celebration/
 
 ## 🎯 Usage
 
-1. **View the greeting**: The main birthday greeting appears at the top
-2. **Flip birthday cards**: Click on any card to flip and read birthday messages
-3. **Move your mouse**: Watch the birthday cake follow your cursor
+1. **View the greeting**: The main New Year greeting appears at the top
+2. **Flip New Year cards**: Click on any card to flip and read New Year messages
+3. **Move your mouse**: Watch the New Year emoji follow your cursor
 4. **Click anywhere**: Trigger confetti effects
 5. **Write a wish**: 
-   - Type a birthday message in the textarea
+   - Type a New Year message in the textarea
    - Optionally add your name
    - Click "Submit Wish" button or press Ctrl+Enter
 6. **View wishes board**: See all submitted wishes displayed in a beautiful grid
-7. **Share the link**: Share your birthday page URL with friends and family
+7. **Share the link**: Share your New Year page URL with friends and family
 8. **Watch balloons**: See balloons float across the screen
 
 ## 🛠️ Customization
@@ -242,9 +242,9 @@ Potential features to add:
 - [x] Real-time wish updates
 - [x] Shareable link functionality
 - [x] Shared wish boards with room IDs
-- [ ] Multiple birthday themes
+- [ ] Multiple New Year themes
 - [ ] Photo gallery section
-- [ ] Birthday countdown timer
+- [ ] New Year countdown timer
 - [ ] Music player integration
 - [ ] Social media sharing
 - [ ] Multiple language support
@@ -252,7 +252,7 @@ Potential features to add:
 
 ## 📝 License
 
-This project is open source and available for personal use. Feel free to modify and customize it for your birthday celebrations!
+This project is open source and available for personal use. Feel free to modify and customize it for your New Year celebrations!
 
 ## 🙏 Acknowledgements
 
@@ -267,7 +267,7 @@ This project is open source and available for personal use. Feel free to modify 
 - Vanilla JavaScript
 - canvas-confetti library
 - Supabase (for database and real-time features)
-- Google Fonts (Poppins)
+- Google Fonts (Inter & Playfair Display)
 
 ## 🆘 Troubleshooting
 
@@ -302,4 +302,4 @@ This project is open source and available for personal use. Feel free to modify 
 
 ---
 
-**Enjoy your birthday celebration! 🎂🎉🎈**
+**Happy New Year 2026! 🎉🎊🎈**
