@@ -11,11 +11,12 @@ This is a beautiful, interactive birthday celebration website that includes:
 - **Interactive Birthday Cards**: Flip cards with beautiful birthday messages
 - **Confetti Effects**: Click anywhere on the page to trigger colorful confetti!
 - **Personal Birthday Wishes Board**: Write and submit birthday wishes that are stored in your browser's localStorage
-- **Privacy-Focused**: Each user only sees their own wishes - no one else can see your wishes
-- **Database Analytics**: Wishes are also saved to Supabase for analytics (but not displayed publicly)
+- **Shareable Wish Boards**: Click "Share Board" to create a shared room where everyone can see all wishes together!
+- **Real-time Updates**: When using a shared board, see new wishes appear instantly as others submit them
+- **Privacy-Focused**: Personal mode keeps your wishes private, or share a link to see everyone's wishes together
+- **Database Storage**: Wishes are saved to Supabase for shared boards and analytics
 - **Floating Balloons**: Animated balloons that float across the screen
 - **Sound Effects**: Celebratory sounds when clicking or submitting wishes
-- **Multi-shareable Link**: Share your birthday page link with friends and family!
 
 ## 🚀 Setup Instructions
 
@@ -48,11 +49,14 @@ cd HappyBirthday
      - Open `supabase-setup.sql` and copy the entire SQL script
      - Paste it into the SQL Editor
      - Click **Run** to execute
+     - Then run `supabase-room-migration.sql` to add the `room_id` column for shared boards
+     - **Enable Real-time**: Go to Database → Replication in Supabase dashboard and enable replication for the `birthday_wishes` table (required for real-time updates in shared boards)
    
    - **Option B: Existing Table** - If you already have the table created:
      - Open `supabase-migration.sql` and copy the SQL script
      - Paste it into the SQL Editor
      - Click **Run** to add the new columns (ip_address, device_info)
+     - Then run `supabase-room-migration.sql` to add the `room_id` column for shared boards
    
    The table includes:
    - `id` - Unique identifier
@@ -60,6 +64,7 @@ cd HappyBirthday
    - `wisher_name` - Name of the person leaving the wish
    - `ip_address` - IP address of the user (for analytics)
    - `device_info` - Device information stored as JSON (browser, OS, device type, language)
+   - `room_id` - Room/board identifier for shared wish boards
    - `created_at` - Timestamp when the wish was created
 
 4. **Get Your Supabase Credentials**
@@ -140,9 +145,18 @@ This project uses vanilla JavaScript, HTML, and CSS - no build tools or package 
 - **Floating Balloons**: Watch colorful balloons float across the screen
 - **Sound Effects**: Celebratory sounds when clicking or submitting wishes
 
+### Sharing Features
+
+- **Share Board Button**: Click "Share Board" to create a shared room and get a shareable link
+- **Shared Wish Boards**: When someone opens your shared link, they'll see ALL wishes from everyone in that room
+- **Real-time Updates**: New wishes appear instantly for everyone viewing the shared board
+- **Personal Mode**: By default, you see only your own wishes (stored in localStorage)
+- **Shared Mode**: When using a shared link, all wishes are stored in Supabase and visible to everyone
+
 ### Storage Features
 
-- **LocalStorage Display**: Wishes are displayed from your browser's localStorage - each user only sees their own wishes
+- **LocalStorage Display**: In personal mode, wishes are displayed from your browser's localStorage - each user only sees their own wishes
+- **Supabase Storage**: In shared mode, wishes are stored in Supabase and visible to everyone with the link
 - **Privacy-First**: Your wishes are private to you - no one else can see them
 - **Database Analytics**: Wishes are also saved to Supabase in the background for analytics purposes
 - **Persistent**: Wishes persist in your browser even after closing the page
@@ -214,7 +228,9 @@ The website includes simple sound effects using the Web Audio API. These are sub
 ## 🔒 Security & Privacy
 
 - **Row Level Security (RLS)**: Enabled on Supabase table
-- **Public Read/Write**: Anyone with the link can view and add wishes
+- **Public Read/Write**: Anyone with a shared room link can view and add wishes to that room
+- **Personal Mode**: Your personal wishes (localStorage) are private and only visible to you
+- **Shared Mode**: Wishes in shared rooms are visible to everyone with the room link
 - **Database Protection**: Database credentials are kept in `config.js` (not exposed to users)
 - **No Authentication Required**: Simple and accessible for everyone
 
@@ -225,6 +241,7 @@ Potential features to add:
 - [x] Supabase database integration
 - [x] Real-time wish updates
 - [x] Shareable link functionality
+- [x] Shared wish boards with room IDs
 - [ ] Multiple birthday themes
 - [ ] Photo gallery section
 - [ ] Birthday countdown timer

@@ -6,6 +6,64 @@ const wishesBoard = document.getElementById("wishes-board");
 const loadingMessage = document.getElementById("loading-message");
 const balloonsContainer = document.getElementById("balloons");
 const cards = document.querySelectorAll('.card');
+const shareButton = document.getElementById("share-button");
+const boardModeIndicator = document.getElementById("board-mode-indicator");
+
+// Room/Board ID management
+let currentRoomId = null;
+let realtimeSubscription = null;
+
+// Generate a unique room ID
+function generateRoomId() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
+// Get room ID from URL (if exists)
+function getRoomIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('room');
+}
+
+// Create a new shared room
+function createSharedRoom() {
+    const newRoomId = generateRoomId();
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.set('room', newRoomId);
+    window.location.href = newUrl.toString();
+}
+
+// Copy share link to clipboard
+async function copyShareLink() {
+    let shareUrl = window.location.href;
+    
+    // If no room ID in URL, create one first
+    const roomId = getRoomIdFromUrl();
+    if (!roomId) {
+        // Create a new shared room
+        createSharedRoom();
+        return;
+    }
+    
+    try {
+        await navigator.clipboard.writeText(shareUrl);
+        showNotification("Share link copied! 📋 Share it with your friends!", "success");
+    } catch (error) {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = shareUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showNotification("Share link copied! 📋 Share it with your friends!", "success");
+        } catch (err) {
+            showNotification("Could not copy link. Please copy manually: " + shareUrl, "error");
+        }
+        document.body.removeChild(textArea);
+    }
+}
 
 // Get user's IP address
 async function getUserIP() {
@@ -132,67 +190,64 @@ submitButton.addEventListener("click", async () => {
                 ip_address: ipAddress,
                 device_info: deviceInfo,
                 created_at: new Date().toISOString(),
-                id: Date.now().toString() + Math.random().toString(36).substr(2, 9)
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                room_id: currentRoomId
             };
             
-            // Save to localStorage first (for immediate display)
-            const savedWish = saveWishToLocalStorage(wishData);
-            
-            if (savedWish) {
-                // Display the wish on the board immediately
-                addWishToBoard({ ...savedWish, isNew: true });
-                
-                // Clear the inputs
-                wishTextarea.value = '';
-                wisherNameInput.value = '';
-                
-                // Create confetti celebration
-                confetti({
-                    particleCount: 150,
-                    spread: 80,
-                    origin: { y: 0.6 },
-                    colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe']
-                });
-                
-                // Play sound
-                playSound();
-                
-                // Show success message
-                showNotification("Your wish has been submitted! 🎉");
-            }
-            
-            // Save to Supabase database in the background (for analytics)
-            // This happens silently - user doesn't need to wait for it
-            if (supabaseClient) {
+            // If we're in a shared room, save directly to Supabase
+            // Otherwise, save to localStorage for personal use
+            if (currentRoomId && supabaseClient) {
+                // Save to Supabase for shared room
                 supabaseClient
-                    .from('birthday_wishes')  // Using original table name - change to 'newyear_wishes' if you created a new table
+                    .from('birthday_wishes')
                     .insert([
                         {
                             message: wishMessage,
                             wisher_name: wisherName,
                             ip_address: ipAddress,
                             device_info: deviceInfo,
-                            created_at: new Date().toISOString()
+                            created_at: new Date().toISOString(),
+                            room_id: currentRoomId
                         }
                     ])
                     .then(({ data, error }) => {
                         if (error) {
                             console.error('Error saving wish to database:', error);
-                            console.error('Error details:', JSON.stringify(error, null, 2));
-                            // Show a subtle notification if database save fails
-                            if (error.code === 'PGRST116' || error.message.includes('relation') || error.message.includes('does not exist')) {
-                                console.warn('Table does not exist. Please create the table in Supabase.');
-                            }
+                            showNotification("Error saving wish. Please try again.", "error");
                         } else {
-                            console.log('✅ Wish saved to database for analytics:', data);
+                            // Wish will appear via real-time subscription
+                            console.log('✅ Wish saved to shared room:', data);
                         }
                     })
                     .catch(error => {
-                        console.error('Error saving wish to database (non-critical):', error);
+                        console.error('Error saving wish to database:', error);
+                        showNotification("Error saving wish. Please try again.", "error");
                     });
             } else {
-                console.warn('Supabase client not initialized. Wishes saved to localStorage only.');
+                // Save to localStorage for personal use
+                const savedWish = saveWishToLocalStorage(wishData);
+                if (savedWish) {
+                    addWishToBoard({ ...savedWish, isNew: true });
+                }
             }
+            
+            // Clear the inputs
+            wishTextarea.value = '';
+            wisherNameInput.value = '';
+            
+            // Create confetti celebration
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe']
+            });
+            
+            // Play sound
+            playSound();
+            
+            // Show success message
+            showNotification("Your wish has been submitted! 🎉");
             
         } catch (error) {
             console.error('Error:', error);
@@ -238,7 +293,6 @@ function addWishToBoard(wishData) {
     wishCard.innerHTML = `
         <div class="wish-card-header">
             <div class="wish-card-emoji">${randomEmoji}</div>
-            <div class="wish-card-name">${escapeHtml(wishData.wisher_name || 'Anonymous')}</div>
         </div>
         <div class="wish-card-message">${escapeHtml(wishData.message)}</div>
         <div class="wish-card-time">${formattedDate}</div>
@@ -256,6 +310,119 @@ function addWishToBoard(wishData) {
     if (wishData.isNew) {
         wishCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
+}
+
+// Load wishes from Supabase for shared room
+async function loadWishesFromSupabase(roomId) {
+    if (!supabaseClient) {
+        console.warn('Supabase client not initialized');
+        return;
+    }
+    
+    try {
+        console.log(`Loading wishes from shared room: ${roomId}`);
+        
+        const { data, error } = await supabaseClient
+            .from('birthday_wishes')
+            .select('*')
+            .eq('room_id', roomId)
+            .order('created_at', { ascending: false });
+        
+        if (error) {
+            console.error('Error loading wishes from database:', error);
+            if (loadingMessage) {
+                loadingMessage.textContent = "Error loading wishes. Please refresh the page.";
+                loadingMessage.style.color = "rgba(255, 200, 200, 0.9)";
+            }
+            return;
+        }
+        
+        // Remove loading message
+        if (loadingMessage && loadingMessage.parentNode) {
+            loadingMessage.remove();
+        }
+        
+        // Display wishes
+        if (data && data.length > 0) {
+            data.forEach(wish => {
+                // Convert database format to display format
+                const wishData = {
+                    id: wish.id.toString(),
+                    message: wish.message,
+                    wisher_name: wish.wisher_name || 'Anonymous',
+                    created_at: wish.created_at,
+                    room_id: wish.room_id
+                };
+                addWishToBoard(wishData);
+            });
+            
+            console.log(`Loaded ${data.length} wishes from shared room`);
+        } else {
+            // Show message if no wishes
+            const noWishesMsg = document.createElement("div");
+            noWishesMsg.className = "loading-message";
+            noWishesMsg.textContent = "No wishes yet. Be the first to leave a wish! 💝";
+            noWishesMsg.style.gridColumn = "1 / -1";
+            wishesBoard.appendChild(noWishesMsg);
+        }
+        
+        // Subscribe to real-time updates for this room
+        subscribeToRoomUpdates(roomId);
+        
+    } catch (error) {
+        console.error('Error loading wishes from Supabase:', error);
+        if (loadingMessage) {
+            loadingMessage.textContent = "Error loading wishes. Please refresh the page.";
+            loadingMessage.style.color = "rgba(255, 200, 200, 0.9)";
+        }
+    }
+}
+
+// Subscribe to real-time updates for a room
+function subscribeToRoomUpdates(roomId) {
+    if (!supabaseClient) {
+        return;
+    }
+    
+    // Remove existing subscription if any
+    if (realtimeSubscription) {
+        supabaseClient.removeChannel(realtimeSubscription);
+    }
+    
+    console.log(`Subscribing to real-time updates for room: ${roomId}`);
+    
+    realtimeSubscription = supabaseClient
+        .channel(`room:${roomId}`)
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'birthday_wishes',
+                filter: `room_id=eq.${roomId}`
+            },
+            (payload) => {
+                console.log('New wish received:', payload);
+                const wish = payload.new;
+                const wishData = {
+                    id: wish.id.toString(),
+                    message: wish.message,
+                    wisher_name: wish.wisher_name || 'Anonymous',
+                    created_at: wish.created_at,
+                    room_id: wish.room_id,
+                    isNew: true
+                };
+                addWishToBoard(wishData);
+                
+                // Show notification for new wish from others
+                if (wish.wisher_name && wish.wisher_name !== 'Anonymous') {
+                    showNotification(`New wish from ${wish.wisher_name}! 🎉`);
+                } else {
+                    showNotification("New wish added! 🎉");
+                }
+            }
+        )
+        .subscribe();
 }
 
 // Load wishes from localStorage
@@ -419,6 +586,13 @@ wishTextarea.addEventListener("keydown", (e) => {
     }
 });
 
+// Share button functionality
+if (shareButton) {
+    shareButton.addEventListener("click", () => {
+        copyShareLink();
+    });
+}
+
 // Card flip functionality
 cards.forEach(card => {
     card.addEventListener('click', () => {
@@ -441,10 +615,37 @@ cards.forEach(card => {
     
 });
 
+// Update board mode indicator
+function updateBoardModeIndicator(isShared) {
+    if (!boardModeIndicator) return;
+    
+    if (isShared) {
+        boardModeIndicator.textContent = "🌟 Shared Board - Everyone can see all wishes!";
+        boardModeIndicator.className = "board-mode-indicator shared-mode";
+    } else {
+        boardModeIndicator.textContent = "👤 Personal Board - Only you can see your wishes";
+        boardModeIndicator.className = "board-mode-indicator personal-mode";
+    }
+}
+
 // Load wishes when page loads
 window.addEventListener("load", () => {
-    // Load wishes from localStorage - each user only sees their own wishes
-    loadWishesFromLocalStorage();
+    // Check if we're in a shared room (room ID from URL)
+    const roomIdFromUrl = getRoomIdFromUrl();
+    
+    if (roomIdFromUrl && supabaseClient) {
+        // We're in a shared room - load from Supabase
+        currentRoomId = roomIdFromUrl;
+        console.log('Loading shared room:', currentRoomId);
+        updateBoardModeIndicator(true);
+        loadWishesFromSupabase(roomIdFromUrl);
+    } else {
+        // Personal mode - load from localStorage
+        currentRoomId = null;
+        console.log('Loading personal wishes from localStorage');
+        updateBoardModeIndicator(false);
+        loadWishesFromLocalStorage();
+    }
     
     // Welcome confetti
     setTimeout(() => {
@@ -455,8 +656,5 @@ window.addEventListener("load", () => {
             colors: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe']
         });
     }, 500);
-    
-    // Note: Real-time subscription removed since we're displaying from localStorage
-    // Wishes are still saved to database for analytics, but displayed from localStorage
 });
 
