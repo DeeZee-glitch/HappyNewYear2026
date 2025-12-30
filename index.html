@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy New Year 2026!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="greeting">
+        <h1>🎉 Happy New Year 2026! 🎊</h1>
+        <p class="subtitle">Welcome to a new year filled with joy, success, and endless possibilities!</p>
+    </div>
+    
+    <div id="cursor-following">
+        <div id="cake-cursor">🎊</div>
+    </div>
+    
+    <div class="birthday-cards-section">
+        <h2 class="section-title">🎴 New Year Cards Collection</h2>
+        <div class="cards-container" id="cards-container">
+            <div class="card" data-card="1">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-emoji">🎊</div>
+                        <h3>New Beginnings</h3>
+                    </div>
+                    <div class="card-back">
+                        <p class="card-message">May the new year bring you endless opportunities, joy, and all the success you deserve! 🎉</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card" data-card="2">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-emoji">🎈</div>
+                        <h3>Celebration Time</h3>
+                    </div>
+                    <div class="card-back">
+                        <p class="card-message">Another year, another chance to shine! Here's to new adventures and amazing memories! 🌟</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card" data-card="3">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-emoji">🎁</div>
+                        <h3>Special Day</h3>
+                    </div>
+                    <div class="card-back">
+                        <p class="card-message">Wishing you a year as wonderful and special as you are! Happy New Year! ✨</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card" data-card="4">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-emoji">🎊</div>
+                        <h3>Joy & Happiness</h3>
+                    </div>
+                    <div class="card-back">
+                        <p class="card-message">May the new year bring you countless reasons to smile and celebrate! 🎉</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card" data-card="5">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-emoji">🍰</div>
+                        <h3>Sweet Moments</h3>
+                    </div>
+                    <div class="card-back">
+                        <p class="card-message">Here's to a year of amazing adventures and beautiful memories! 🎊</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card" data-card="6">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-emoji">🌟</div>
+                        <h3>Shine Bright</h3>
+                    </div>
+                    <div class="card-back">
+                        <p class="card-message">You're a star! May the new year be as bright and beautiful as you are! ⭐</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="birthday-wishes">
+        <h2>Write Your New Year Wish!</h2>
+        <div class="wish-input-section">
+            <textarea id="wish" placeholder="Enter your message here..."></textarea>
+            <input type="text" id="wisher-name" placeholder="Your name (optional)" maxlength="50">
+            <button id="submit-wish">Submit Wish</button>
+        </div>
+    </div>
+    
+    <div class="wishes-board-section">
+        <h2 class="section-title">💌 New Year Wishes Board</h2>
+        <div class="wishes-board" id="wishes-board">
+            <div class="loading-message" id="loading-message">Loading wishes... ✨</div>
+        </div>
+    </div>
+    
+    <div class="balloons-container" id="balloons"></div>
+    
+    <footer>
+        <p>Made with ❤️ by Zainul Abideen</p>
+        <p class="social-link">
+            <a href="https://www.instagram.com/_zaayyy__n" target="_blank" rel="noopener noreferrer">
+                📷 Follow on Instagram
+            </a>
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
