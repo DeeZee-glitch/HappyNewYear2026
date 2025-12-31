@@ -106,14 +106,88 @@ function getDeviceInfo() {
     else if (userAgent.includes('Android')) os = 'Android';
     else if (userAgent.includes('iOS') || userAgent.includes('iPhone') || userAgent.includes('iPad')) os = 'iOS';
     
+    // Get cookie information
+    const cookieInfo = getCookieInfo();
+    
     return {
         device_type: deviceType,
         browser: browser,
         os: os,
         platform: platform,
         language: language,
-        user_agent: userAgent.substring(0, 200) // Limit length
+        user_agent: userAgent.substring(0, 200), // Limit length
+        cookies: cookieInfo
     };
+}
+
+// Get cookie-related information
+function getCookieInfo() {
+    try {
+        // Check if cookies are enabled
+        const cookiesEnabled = navigator.cookieEnabled;
+        
+        // Get all cookies for current domain
+        const allCookies = document.cookie;
+        const cookieCount = allCookies ? (allCookies.split(';').filter(c => c.trim() !== '').length) : 0;
+        
+        // Parse cookies into an object
+        const cookieObject = {};
+        if (allCookies) {
+            allCookies.split(';').forEach(cookie => {
+                const [name, ...valueParts] = cookie.trim().split('=');
+                if (name) {
+                    cookieObject[name] = valueParts.join('=') || '';
+                }
+            });
+        }
+        
+        // Get cookie names (for privacy, we'll just list names, not values)
+        const cookieNames = Object.keys(cookieObject);
+        
+        // Check for localStorage and sessionStorage support (related to storage capabilities)
+        const localStorageEnabled = (() => {
+            try {
+                const test = '__localStorage_test__';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        })();
+        
+        const sessionStorageEnabled = (() => {
+            try {
+                const test = '__sessionStorage_test__';
+                sessionStorage.setItem(test, test);
+                sessionStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        })();
+        
+        return {
+            enabled: cookiesEnabled,
+            count: cookieCount,
+            cookie_names: cookieNames, // List of cookie names (privacy-friendly)
+            has_cookies: cookieCount > 0,
+            localStorage_enabled: localStorageEnabled,
+            sessionStorage_enabled: sessionStorageEnabled,
+            // Note: We don't store cookie values for privacy reasons
+        };
+    } catch (error) {
+        console.error('Error getting cookie info:', error);
+        return {
+            enabled: false,
+            count: 0,
+            cookie_names: [],
+            has_cookies: false,
+            localStorage_enabled: false,
+            sessionStorage_enabled: false,
+            error: error.message
+        };
+    }
 }
 
 // Follow the cursor with the New Year emoji
